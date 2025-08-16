@@ -21,7 +21,7 @@ export default function ProgressBar({
             {/* Connector line */}
             {index !== 0 && (
               <div
-                className={`absolute top-1/2 left-0 w-full h-0.5 -translate-x-1/2 bg-gray-300 ${
+                className={`absolute top-1/2 left-1 w-full h-0.5 -translate-x-1/2 bg-gray-300 ${
                   isCompleted ? "bg-blue-600" : ""
                 }`}
                 style={{ zIndex: 0 }}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ProgressBar from "../form-steps/ProgressBar/ProgressBar";
 import { EmployeeFormPersonalInfomationSteps1 } from "../form-steps/Steps1PersonalInformation";
-import Step2JobDetails from "../form-steps/Step2JobDetails";
+import { Step2JobDetails } from "../form-steps/Step2JobDetails";
 
 const steps = [
   "Personal Info",

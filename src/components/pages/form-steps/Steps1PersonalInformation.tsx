@@ -2,6 +2,9 @@ import { personalInfoSchema } from "@/components/utils/validationSchema";
 import { useReusableForm } from "../hooks/useFromHooks";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { saveStep1 } from "@/components/redux/slice/formSlicer";
+import type { RootState } from "@/components/redux/app/store";
 
 type PersonalInfo = {
   fullName: string;
@@ -16,6 +19,9 @@ type StepProps = {
 };
 
 export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
+  const dispatch = useDispatch();
+  const step1Data = useSelector((state: RootState) => state.form.step1);
+
   const {
     register,
     formState: { errors },
@@ -23,13 +29,18 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
     watch,
   } = useReusableForm<PersonalInfo>({
     schema: personalInfoSchema,
+    defaultValues: step1Data, // <--- Redux থেকে আগের value set
     onSubmit: (data: PersonalInfo) => {
+      // ✅ Save Step1 data to Redux
+      dispatch(saveStep1(data));
+
       console.log("Employee Data:", data);
       if (data.profilePicture && data.profilePicture.length > 0) {
         console.log("Uploaded file:", data.profilePicture[0]);
       }
+
       toast.success("Step 1 completed!");
-      onNext();
+      onNext(); // Step2 এ যাও
     },
   });
 
@@ -44,6 +55,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
 
   return (
     <form className="space-y-4 max-w-2xl mx-auto shadow-xl bg-white p-4">
+      {/* Full Name */}
       <div>
         <label className="block mb-1 font-semibold">Full Name</label>
         <input
@@ -56,6 +68,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
         )}
       </div>
 
+      {/* Email + Phone */}
       <div className="flex flex-col md:flex-row md:gap-4">
         <div className="flex-1">
           <label className="block mb-1 font-semibold">Email</label>
@@ -85,7 +98,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
 
       {/* Date of Birth + Profile Picture */}
       <div className="flex flex-col md:flex-row md:gap-4">
-        {/* Date of Birth */}
+        {/* DOB */}
         <div className="flex-1">
           <label className="block mb-1 font-semibold">Date of Birth</label>
           <input
