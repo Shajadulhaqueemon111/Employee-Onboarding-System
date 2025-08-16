@@ -23,15 +23,14 @@ export const jobDetailsSchema = z
       .enum(["Full-Time", "Part-Time", "Contract", "Internship"])
       .refine((val) => val !== undefined, { message: "Job type is required" }),
 
-    salary: z.preprocess((val) => {
-      if (typeof val === "string") return Number(val);
-      return val;
-    }, z.number().min(30000, "Full-Time salary must be at least $30,000").max(200000, "Full-Time salary cannot exceed $200,000")),
+    salary: z.preprocess(
+      (val) => (typeof val === "string" ? Number(val) : val),
+      z.number()
+    ),
 
     manager: z.string().min(1, "Manager selection is required"),
   })
   .superRefine((data, ctx) => {
-    // 1. Start date cannot be in the past
     if (data.startDate < new Date()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -40,12 +39,11 @@ export const jobDetailsSchema = z
       });
     }
 
-    // 2. HR/Finance cannot start on Friday or Saturday
     if (
       (data.department === "HR" || data.department === "Finance") &&
       data.startDate instanceof Date &&
       !isNaN(data.startDate.getTime()) &&
-      [5, 6].includes(data.startDate.getDay()) // 5=Friday, 6=Saturday
+      [5, 6].includes(data.startDate.getDay())
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -54,7 +52,6 @@ export const jobDetailsSchema = z
       });
     }
 
-    // 3. Salary rules based on Job Type
     if (data.jobType === "Contract") {
       if (data.salary < 50 || data.salary > 150) {
         ctx.addIssue({

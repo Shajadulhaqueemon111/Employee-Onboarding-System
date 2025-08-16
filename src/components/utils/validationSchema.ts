@@ -19,8 +19,8 @@ export const personalInfoSchema = z.object({
     .custom<FileList>()
     .optional()
     .refine((files) => {
-      if (!files || files.length === 0) return true;
-      const file = files[0];
+      const file = files?.[0];
+      if (!file) return true;
       return (
         file.size <= 4_000_000 &&
         ["image/jpeg", "image/png"].includes(file.type)

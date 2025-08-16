@@ -31,9 +31,8 @@ type Step4Data = {
   relationship: string;
   phone: string;
   age: number;
-  guardianName: string;
-  guardianPhone: string;
-  department?: string;
+  guardianName?: string;
+  guardianPhone?: string;
 };
 
 type FormState = {

@@ -4,9 +4,10 @@ import { nextStep, prevStep } from "@/components/redux/slice/formSlicer";
 import { EmployeeFormPersonalInfomationSteps1 } from "../form-steps/Steps1PersonalInformation";
 import { Step2JobDetails } from "../form-steps/Step2JobDetails";
 import { Step3SkillsPreferences } from "../form-steps/Step3SkillsPreferences";
-import Step4EmergencyContact from "../form-steps/Step4EmergencyContact";
+
 import { Step5ReviewSubmit } from "../form-steps/Steps5ReviewAndSubmit";
 import ProgressBar from "../form-steps/ProgressBar/ProgressBar";
+import { Step4EmergencyContact } from "../form-steps/Step4EmergencyContact";
 
 export default function EmployeeOnboardingForm() {
   const dispatch = useDispatch();

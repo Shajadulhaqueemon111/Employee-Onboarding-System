@@ -54,7 +54,6 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
 
   return (
     <form className="space-y-4 max-w-4xl mx-auto shadow-xl bg-white p-4">
-      {/* Full Name */}
       <div className="mx-auto text-center">
         <h1 className="text-2xl font-bold text-black">Personal Information</h1>
         <p className="text-gray-600">Lets start with your basic information</p>
@@ -71,7 +70,6 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
         )}
       </div>
 
-      {/* Email + Phone */}
       <div className="flex flex-col md:flex-row md:gap-4">
         <div className="flex-1">
           <label className="block mb-1 font-semibold">Email</label>
@@ -99,9 +97,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
         </div>
       </div>
 
-      {/* Date of Birth + Profile Picture */}
       <div className="flex flex-col md:flex-row md:gap-4">
-        {/* DOB */}
         <div className="flex-1">
           <label className="block mb-1 font-semibold">Date of Birth</label>
           <input

@@ -23,9 +23,8 @@ type StepProps = {
 
 export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
   const dispatch = useDispatch();
-  const department = useSelector(
-    (state: RootState) => state.form.step2.department
-  );
+  const step2Data = useSelector((state: RootState) => state.form.step2);
+
   const {
     register,
     formState: { errors },
@@ -34,6 +33,7 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
     setValue,
   } = useReusableForm<JobDetails>({
     schema: jobDetailsSchema,
+    defaultValues: step2Data,
     onSubmit: (data) => {
       dispatch(saveStep2(data));
       console.log("Job Details Submitted:", data);
@@ -42,14 +42,20 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
     },
   });
 
+  const department = watch("department");
   const jobType = watch("jobType");
 
-  // Auto-clear manager if department changes
+  useEffect(() => {
+    Object.entries(step2Data).forEach(([key, value]) => {
+      setValue(key as keyof JobDetails, value);
+    });
+  }, [step2Data, setValue]);
+
   useEffect(() => {
     setValue("manager", "");
   }, [department, setValue]);
 
-  // Filter managers dynamically from mockManagers
+  // Filter managers dynamically
   const filteredManagers = department
     ? mockManagers.filter((mgr) => mgr.department === department)
     : [];
@@ -59,10 +65,9 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
       {/* Department */}
       <div className="mx-auto text-center">
         <h1 className="text-2xl font-bold text-black">Job Details</h1>
-        <p className="text-gray-600">
-          Tell us Aboute your role and expectation
-        </p>
+        <p className="text-gray-600">Tell us about your role and expectation</p>
       </div>
+
       <div>
         <label className="block mb-1 font-semibold">Department</label>
         <select
@@ -81,7 +86,6 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
         )}
       </div>
 
-      {/* Position Title */}
       <div>
         <label className="block mb-1 font-semibold">Position Title</label>
         <input
@@ -94,7 +98,6 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
         )}
       </div>
 
-      {/* Start Date */}
       <div>
         <label className="block mb-1 font-semibold">Start Date</label>
         <input
@@ -107,7 +110,6 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
         )}
       </div>
 
-      {/* Job Type */}
       <div>
         <label className="block mb-1 font-semibold">Job Type</label>
         <div className="flex gap-4">
@@ -122,7 +124,6 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
         )}
       </div>
 
-      {/* Salary */}
       <div>
         <label className="block mb-1 font-semibold">
           Salary{" "}

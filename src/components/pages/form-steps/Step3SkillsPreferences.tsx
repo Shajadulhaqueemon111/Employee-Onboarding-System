@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { useReusableForm } from "../hooks/useFromHooks";
 import { toast } from "react-hot-toast";
-
 import { skillsPreferencesSchema } from "@/components/utils/skilsandexprianceZodSchema";
 import type { RootState } from "@/components/redux/app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,10 +16,7 @@ type SkillsPreferences = {
   extraNotes: string;
 };
 
-type StepProps = {
-  onNext: () => void;
-  onPrev: () => void;
-};
+type StepProps = { onNext: () => void; onPrev: () => void };
 
 const skillsByDepartment: Record<string, string[]> = {
   Engineering: ["React", "Node.js", "TypeScript", "Python", "Docker"],
@@ -33,8 +29,20 @@ const skillsByDepartment: Record<string, string[]> = {
 export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
   const dispatch = useDispatch();
   const department = useSelector(
-    (state: RootState) => state.form.step2.department
+    (state: RootState) => state.form.step2.department || ""
   );
+  const savedStep3 = useSelector((state: RootState) => state.form.step3);
+
+  const defaultSkills =
+    savedStep3.skills && savedStep3.skills.length > 0
+      ? savedStep3.skills
+      : department
+      ? skillsByDepartment[department].map((name) => ({
+          name,
+          selected: false,
+          experience: 0,
+        }))
+      : [];
 
   const {
     register,
@@ -45,19 +53,15 @@ export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
   } = useReusableForm<SkillsPreferences>({
     schema: skillsPreferencesSchema,
     defaultValues: {
-      skills:
-        skillsByDepartment[department]?.map((name) => ({
-          name,
-          selected: false,
-          experience: 0,
-        })) || [],
-      workingHours: { start: "", end: "" },
-      remotePercent: 0,
-      managerApproved: false,
-      extraNotes: "",
       department,
+      skills: defaultSkills,
+      workingHours: savedStep3.workingHours || { start: "", end: "" },
+      remotePercent: savedStep3.remotePercent || 0,
+      managerApproved: savedStep3.managerApproved || false,
+      extraNotes: savedStep3.extraNotes || "",
     },
     onSubmit: (data) => {
+      if (data.remotePercent <= 50) data.managerApproved = false;
       dispatch(saveStep3(data));
       toast.success("Step 3 completed!");
       onNext();
@@ -71,28 +75,35 @@ export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
     if (remotePercent <= 50) setValue("managerApproved", false);
   }, [remotePercent, setValue]);
 
+  useEffect(() => {
+    if (department && (!savedStep3.skills || savedStep3.skills.length === 0)) {
+      const newSkills = skillsByDepartment[department].map((name) => ({
+        name,
+        selected: false,
+        experience: 0,
+      }));
+      setValue("skills", newSkills);
+    }
+  }, [department, setValue, savedStep3.skills]);
+
   return (
     <form
       className="space-y-4 max-w-2xl mx-auto shadow-xl bg-white p-4"
       onSubmit={handleSubmitForm}
     >
-      <div className="mx-auto text-center">
-        <h1 className="text-2xl font-bold text-black">Skills & Preferences</h1>
-        <p className="text-gray-600">
-          Tell us Aboute your skills and work performance
+      <div>
+        <h1 className="text-2xl font-bold text-center">Skills & Preferences</h1>
+        <p className="text-center text-gray-700">
+          your skils,start date, end date and remote work add
         </p>
       </div>
-      {/* Skills */}
       <div>
-        <label className="block mb-1 font-semibold">
-          Primary Skills (Select at least 3)
-        </label>
+        <label>Primary Skills (Select at least 3)</label>
         {skills.map((skill, idx) => (
           <div key={skill.name} className="flex items-center gap-2 mb-2">
             <input
               type="checkbox"
               {...register(`skills.${idx}.selected` as const)}
-              className="h-4 w-4"
             />
             <span>{skill.name}</span>
             {watch(`skills.${idx}.selected`) && (
@@ -102,56 +113,37 @@ export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
                   valueAsNumber: true,
                 })}
                 placeholder="Years exp"
-                className="ml-2 w-20 border rounded p-1"
+                className="ml-2 w-20 border p-1 rounded"
               />
             )}
           </div>
         ))}
-
-        {/* show refine error properly */}
         {errors.skills && (
-          <p className="text-red-500">
-            {(errors.skills as any)?.message ||
-              (errors.skills as any)?.root?.message}
-          </p>
+          <p className="text-red-500">{(errors.skills as any)?.message}</p>
         )}
       </div>
 
-      {/* Working Hours */}
       <div className="flex gap-4">
         <div>
-          <label className="block mb-1 font-semibold">Start Time</label>
+          <label>Start Time</label>
           <input
             type="time"
             {...register("workingHours.start")}
-            className="border rounded p-2"
+            className="border p-2 rounded w-full"
           />
-          {errors.workingHours?.start && (
-            <p className="text-red-500">
-              {errors.workingHours.start.message as string}
-            </p>
-          )}
         </div>
         <div>
-          <label className="block mb-1 font-semibold">End Time</label>
+          <label>End Time</label>
           <input
             type="time"
             {...register("workingHours.end")}
-            className="border rounded p-2"
+            className="border p-2 rounded w-full"
           />
-          {errors.workingHours?.end && (
-            <p className="text-red-500">
-              {errors.workingHours.end.message as string}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Remote % */}
       <div>
-        <label className="block mb-1 font-semibold">
-          Remote % ({remotePercent}%)
-        </label>
+        <label>Remote % ({remotePercent}%)</label>
         <input
           type="range"
           min={0}
@@ -159,33 +151,25 @@ export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
           {...register("remotePercent", { valueAsNumber: true })}
           className="w-full"
         />
-        {errors.remotePercent && (
-          <p className="text-red-500">
-            {errors.remotePercent.message as string}
-          </p>
-        )}
       </div>
 
-      {/* Manager Approved */}
       {remotePercent > 50 && (
         <div>
           <label className="inline-flex items-center gap-2">
-            <input type="checkbox" {...register("managerApproved")} />
-            Manager Approved
+            <input type="checkbox" {...register("managerApproved")} /> Manager
+            Approved
           </label>
         </div>
       )}
 
-      {/* Extra Notes */}
       <div>
-        <label className="block mb-1 font-semibold">Extra Notes</label>
+        <label>Extra Notes</label>
         <textarea
           {...register("extraNotes")}
-          className="w-full border rounded p-2"
+          className="w-full border p-2 rounded"
         />
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-between mt-4">
         <button
           type="button"

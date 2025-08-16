@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { useReusableForm } from "../hooks/useFromHooks";
 import { Button } from "@/components/ui/button";
-// import { resetForm } from "@/components/redux/slice/formSlicer";
+
 import { reviewSubmitSchema } from "@/components/utils/reviewandsubmitZodSchema";
 import type { RootState } from "@/components/redux/app/store";
 import toast from "react-hot-toast";
-import { resetToStep1 } from "@/components/redux/slice/formSlicer";
+import { resetForm, resetToStep1 } from "@/components/redux/slice/formSlicer";
 
 type StepProps = {
   onPrev: () => void;
@@ -32,11 +32,11 @@ export const Step5ReviewSubmit = ({ onPrev }: StepProps) => {
           emergencyContact: formData.step4,
           submittedAt: new Date().toISOString(),
         };
-        console.log("✅ Form submitted:", payload);
+        console.log("Form submitted:", payload);
 
-        // dispatch(resetForm());
         toast.success("Form submitted successfully!");
         setTimeout(() => dispatch(resetToStep1()), 2000);
+        dispatch(resetForm());
       },
     });
 
@@ -44,9 +44,12 @@ export const Step5ReviewSubmit = ({ onPrev }: StepProps) => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 shadow-xl bg-white rounded-lg space-y-6">
-      <h2 className="text-2xl font-bold text-center">Review & Submit</h2>
-
-      {/* Display all step data (read-only) */}
+      <div>
+        <h2 className="text-2xl font-bold text-center">Review & Submit</h2>
+        <p className="text-center text-gray-700">
+          your application review and submit
+        </p>
+      </div>
       <div className="p-4 border rounded">
         <h3 className="font-semibold mb-2">Personal Info</h3>
         <p>
@@ -136,7 +139,6 @@ export const Step5ReviewSubmit = ({ onPrev }: StepProps) => {
         )}
       </div>
 
-      {/* Confirm Checkbox */}
       <div className="flex items-center gap-2">
         <input type="checkbox" {...register("confirm")} id="confirm" />
         <label htmlFor="confirm">
@@ -144,7 +146,6 @@ export const Step5ReviewSubmit = ({ onPrev }: StepProps) => {
         </label>
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-between mt-4">
         <Button
           type="button"

@@ -1,23 +1,23 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useReusableForm } from "../hooks/useFromHooks";
 import { emergencyContactSchema } from "@/components/utils/emergencyContactZodSchema";
-
 import { saveStep4 } from "@/components/redux/slice/formSlicer";
+import type { RootState } from "@/components/redux/app/store";
 
 export type EmergencyContact = {
   contactName: string;
   relationship: string;
   phone: string;
   age: number;
-  guardianName: string;
-  guardianPhone: string;
+  guardianName?: string;
+  guardianPhone?: string;
 };
-type StepProps = {
-  onNext: () => void;
-  onPrev: () => void;
-};
-const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
+
+type StepProps = { onNext: () => void; onPrev: () => void };
+
+export const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
   const dispatch = useDispatch();
+  const savedStep4 = useSelector((state: RootState) => state.form.step4);
 
   const {
     register,
@@ -27,16 +27,16 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
   } = useReusableForm<EmergencyContact>({
     schema: emergencyContactSchema,
     defaultValues: {
-      contactName: "",
-      relationship: "",
-      phone: "",
-      age: 0,
-      guardianName: "",
-      guardianPhone: "",
+      contactName: savedStep4.contactName || "",
+      relationship: savedStep4.relationship || "",
+      phone: savedStep4.phone || "",
+      age: savedStep4.age || 0,
+      guardianName: savedStep4?.guardianName || "",
+      guardianPhone: savedStep4?.guardianPhone || "",
     },
     onSubmit: (data) => {
       dispatch(saveStep4(data));
-      console.log("✅ Emergency Contact Data:", data);
+      console.log("Emergency Contact Data:", data);
       onNext();
     },
   });
@@ -45,12 +45,15 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
 
   return (
     <div className="max-w-lg mx-auto p-6 shadow-xl bg-white rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        Emergency Contact
-      </h2>
-
       <form onSubmit={handleSubmitForm} className="space-y-4">
-        {/* Contact Name */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4 text-center text-black">
+            Emergency Contact
+          </h2>
+          <p className="text-center text-gray-700">
+            your emergency contact details
+          </p>
+        </div>
         <div>
           <label className="block font-semibold">Contact Name</label>
           <input
@@ -65,13 +68,11 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
           )}
         </div>
 
-        {/* Relationship */}
         <div>
           <label className="block font-semibold">Relationship</label>
           <select
             {...register("relationship")}
             className="w-full border rounded p-2"
-            defaultValue=""
           >
             <option value="" disabled>
               Select relationship
@@ -115,7 +116,6 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
           )}
         </div>
 
-        {/* Guardian Details if age < 21 */}
         {age < 21 && (
           <>
             <div>
@@ -131,7 +131,6 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
                 </p>
               )}
             </div>
-
             <div>
               <label className="block font-semibold">Guardian Phone</label>
               <input
@@ -167,5 +166,3 @@ const Step4EmergencyContact = ({ onNext, onPrev }: StepProps) => {
     </div>
   );
 };
-
-export default Step4EmergencyContact;
