@@ -26,10 +26,21 @@ type Step3Data = {
   department: string;
 };
 
+type Step4Data = {
+  contactName: string;
+  relationship: string;
+  phone: string;
+  age: number;
+  guardianName: string;
+  guardianPhone: string;
+  department?: string;
+};
+
 type FormState = {
   step1: Step1Data;
   step2: Step2Data;
   step3: Step3Data;
+  step4: Step4Data;
   currentStep: number;
 };
 
@@ -57,6 +68,14 @@ const initialState: FormState = {
     extraNotes: "",
     department: "",
   },
+  step4: {
+    contactName: "",
+    relationship: "",
+    phone: "",
+    age: 0,
+    guardianName: "",
+    guardianPhone: "",
+  },
   currentStep: 1,
 };
 
@@ -73,6 +92,9 @@ const formSlice = createSlice({
     saveStep3: (state, action: PayloadAction<Step3Data>) => {
       state.step3 = action.payload;
     },
+    saveStep4: (state, action: PayloadAction<Step4Data>) => {
+      state.step4 = action.payload;
+    },
     nextStep: (state) => {
       state.currentStep += 1;
     },
@@ -80,6 +102,9 @@ const formSlice = createSlice({
       state.currentStep -= 1;
     },
     resetForm: () => initialState,
+    resetToStep1: (state) => {
+      state.currentStep = 1;
+    },
   },
 });
 
@@ -87,6 +112,8 @@ export const {
   saveStep1,
   saveStep2,
   saveStep3,
+  saveStep4,
+  resetToStep1,
   nextStep,
   prevStep,
   resetForm,

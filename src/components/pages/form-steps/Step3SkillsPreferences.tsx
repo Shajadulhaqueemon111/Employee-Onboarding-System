@@ -76,6 +76,12 @@ export const Step3SkillsPreferences = ({ onNext, onPrev }: StepProps) => {
       className="space-y-4 max-w-2xl mx-auto shadow-xl bg-white p-4"
       onSubmit={handleSubmitForm}
     >
+      <div className="mx-auto text-center">
+        <h1 className="text-2xl font-bold text-black">Skills & Preferences</h1>
+        <p className="text-gray-600">
+          Tell us Aboute your skills and work performance
+        </p>
+      </div>
       {/* Skills */}
       <div>
         <label className="block mb-1 font-semibold">
