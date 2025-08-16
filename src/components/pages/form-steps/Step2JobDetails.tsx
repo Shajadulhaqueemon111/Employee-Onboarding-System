@@ -1,8 +1,11 @@
 import { useReusableForm } from "../hooks/useFromHooks";
-
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 import { jobDetailsSchema } from "@/components/utils/personalInformaionZodSchema";
+import { mockManagers } from "@/components/utils/mocdata";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/components/redux/app/store";
+import { saveStep2 } from "@/components/redux/slice/formSlicer";
 
 type JobDetails = {
   department: "Engineering" | "Marketing" | "Sales" | "HR" | "Finance";
@@ -18,15 +21,11 @@ type StepProps = {
   onPrev: () => void;
 };
 
-const managersByDepartment: Record<string, string[]> = {
-  Engineering: ["Eng Manager 1", "Eng Manager 2"],
-  Marketing: ["Mkt Manager 1", "Mkt Manager 2"],
-  Sales: ["Sales Manager 1", "Sales Manager 2"],
-  HR: ["HR Manager 1"],
-  Finance: ["Finance Manager 1"],
-};
-
 export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
+  const dispatch = useDispatch();
+  const department = useSelector(
+    (state: RootState) => state.form.step2.department
+  );
   const {
     register,
     formState: { errors },
@@ -36,13 +35,13 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
   } = useReusableForm<JobDetails>({
     schema: jobDetailsSchema,
     onSubmit: (data) => {
+      dispatch(saveStep2(data));
       console.log("Job Details Submitted:", data);
       toast.success("Step 2 completed!");
       onNext();
     },
   });
 
-  const department = watch("department");
   const jobType = watch("jobType");
 
   // Auto-clear manager if department changes
@@ -50,16 +49,20 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
     setValue("manager", "");
   }, [department, setValue]);
 
-  const handleNextClick = () => {
-    handleSubmitForm();
-    if (Object.keys(errors).length > 0) {
-      toast.error("Please fix validation errors before proceeding!");
-    }
-  };
+  // Filter managers dynamically from mockManagers
+  const filteredManagers = department
+    ? mockManagers.filter((mgr) => mgr.department === department)
+    : [];
 
   return (
     <form className="space-y-4 max-w-2xl mx-auto shadow-xl bg-white p-4">
       {/* Department */}
+      <div className="mx-auto text-center">
+        <h1 className="text-2xl font-bold text-black">Job Details</h1>
+        <p className="text-gray-600">
+          Tell us Aboute your role and expectation
+        </p>
+      </div>
       <div>
         <label className="block mb-1 font-semibold">Department</label>
         <select
@@ -144,12 +147,11 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
         <label className="block mb-1 font-semibold">Manager</label>
         <select {...register("manager")} className="w-full border rounded p-2">
           <option value="">Select Manager</option>
-          {department &&
-            managersByDepartment[department]?.map((mgr) => (
-              <option key={mgr} value={mgr}>
-                {mgr}
-              </option>
-            ))}
+          {filteredManagers.map((mgr) => (
+            <option key={mgr.id} value={mgr.name}>
+              {mgr.name}
+            </option>
+          ))}
         </select>
         {errors.manager && (
           <p className="text-red-500">{errors.manager.message}</p>
@@ -163,11 +165,11 @@ export const Step2JobDetails = ({ onNext, onPrev }: StepProps) => {
           onClick={onPrev}
           className="px-4 py-2 rounded bg-gray-500 text-white hover:bg-gray-600"
         >
-          previos
+          Previous
         </button>
         <button
           type="button"
-          onClick={handleNextClick}
+          onClick={handleSubmitForm}
           className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
         >
           Next

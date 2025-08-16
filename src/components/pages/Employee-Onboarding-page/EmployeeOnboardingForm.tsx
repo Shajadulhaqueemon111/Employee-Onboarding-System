@@ -2,6 +2,7 @@ import { useState } from "react";
 import ProgressBar from "../form-steps/ProgressBar/ProgressBar";
 import { EmployeeFormPersonalInfomationSteps1 } from "../form-steps/Steps1PersonalInformation";
 import { Step2JobDetails } from "../form-steps/Step2JobDetails";
+import { Step3SkillsPreferences } from "../form-steps/Step3SkillsPreferences";
 
 const steps = [
   "Personal Info",
@@ -34,9 +35,11 @@ export default function EmployeeOnboardingForm() {
         {currentStep === 1 && (
           <Step2JobDetails onNext={nextStep} onPrev={prevStep} />
         )}
-        {/* {currentStep === 2 && <Step3SkillsPreferences onNext={nextStep} onPrev={prevStep} />}
-        {currentStep === 3 && <Step4EmergencyContact onNext={nextStep} onPrev={prevStep} />}
-        {currentStep === 4 && <Step5ReviewSubmit onPrev={prevStep} />}  */}
+        {currentStep === 2 && (
+          <Step3SkillsPreferences onNext={nextStep} onPrev={prevStep} />
+        )}
+        {/* {currentStep === 3 && <Step4EmergencyContact onNext={nextStep} onPrev={prevStep} />} */}
+        {/* {currentStep === 4 && <Step5ReviewSubmit onPrev={prevStep} />}   */}
       </div>
     </div>
   );

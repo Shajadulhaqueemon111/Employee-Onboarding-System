@@ -17,9 +17,19 @@ type Step2Data = {
   manager: string;
 };
 
+type Step3Data = {
+  skills: { name: string; selected: boolean; experience: number }[];
+  workingHours: { start: string; end: string };
+  remotePercent: number;
+  managerApproved?: boolean;
+  extraNotes: string;
+  department: string;
+};
+
 type FormState = {
   step1: Step1Data;
   step2: Step2Data;
+  step3: Step3Data;
   currentStep: number;
 };
 
@@ -39,6 +49,14 @@ const initialState: FormState = {
     salary: undefined,
     manager: "",
   },
+  step3: {
+    skills: [],
+    workingHours: { start: "", end: "" },
+    remotePercent: 0,
+    managerApproved: false,
+    extraNotes: "",
+    department: "",
+  },
   currentStep: 1,
 };
 
@@ -52,6 +70,9 @@ const formSlice = createSlice({
     saveStep2: (state, action: PayloadAction<Step2Data>) => {
       state.step2 = action.payload;
     },
+    saveStep3: (state, action: PayloadAction<Step3Data>) => {
+      state.step3 = action.payload;
+    },
     nextStep: (state) => {
       state.currentStep += 1;
     },
@@ -62,7 +83,13 @@ const formSlice = createSlice({
   },
 });
 
-export const { saveStep1, saveStep2, nextStep, prevStep, resetForm } =
-  formSlice.actions;
+export const {
+  saveStep1,
+  saveStep2,
+  saveStep3,
+  nextStep,
+  prevStep,
+  resetForm,
+} = formSlice.actions;
 
 export default formSlice.reducer;

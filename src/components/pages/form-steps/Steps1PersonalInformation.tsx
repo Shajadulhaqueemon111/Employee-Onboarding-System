@@ -29,9 +29,8 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
     watch,
   } = useReusableForm<PersonalInfo>({
     schema: personalInfoSchema,
-    defaultValues: step1Data, // <--- Redux থেকে আগের value set
+    defaultValues: step1Data,
     onSubmit: (data: PersonalInfo) => {
-      // ✅ Save Step1 data to Redux
       dispatch(saveStep1(data));
 
       console.log("Employee Data:", data);
@@ -40,7 +39,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
       }
 
       toast.success("Step 1 completed!");
-      onNext(); // Step2 এ যাও
+      onNext();
     },
   });
 
@@ -54,8 +53,12 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
   };
 
   return (
-    <form className="space-y-4 max-w-2xl mx-auto shadow-xl bg-white p-4">
+    <form className="space-y-4 max-w-4xl mx-auto shadow-xl bg-white p-4">
       {/* Full Name */}
+      <div className="mx-auto text-center">
+        <h1 className="text-2xl font-bold text-black">Personal Information</h1>
+        <p className="text-gray-600">Lets start with your basic information</p>
+      </div>
       <div>
         <label className="block mb-1 font-semibold">Full Name</label>
         <input
