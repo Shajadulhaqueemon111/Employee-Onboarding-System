@@ -1,7 +1,3 @@
-Sure! Ami tomake **“Employee Onboarding System”** project er jonno ekta professional README section likhe dicchi, ja tumi direct add korte paro. Eta te project er kaj, technologies, ebong workflow mention kora ache.
-
----
-
 ## 📝 Employee Onboarding System
 
 ### Project Overview

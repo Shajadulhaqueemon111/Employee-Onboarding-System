@@ -128,6 +128,7 @@ export function EmployeeFormPersonalInfomationSteps1({ onNext }: StepProps) {
           {profilePic && profilePic.length > 0 && (
             <p>Selected: {profilePic[0].name}</p>
           )}
+          <p className="text-gray-500 text-sm mt-1">JPG or PNG, max 2MB</p>
         </div>
       </div>
 
